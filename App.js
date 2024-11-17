@@ -1,8 +1,10 @@
 import React from "react";
 import { NavigationContainer } from "@react-navigation/native";
 import { CardStyleInterpolators, createStackNavigator } from "@react-navigation/stack";
-import Welcome from "./components/Welcome";
-import Home from "./components/Home";
+import Welcome from "./pages/Welcome";
+import Home from "./pages/Home";
+import GameSettings from "./pages/GameSettings";
+import Game from "./pages/Game";
 
 const Stack = createStackNavigator();
 
@@ -17,7 +19,10 @@ export default function App() {
         }}
       >
         <Stack.Screen name="Welcome" component={Welcome} />
-        <Stack.Screen name="Accueil" component={Home} />
+        <Stack.Screen name="Home" component={Home} />
+        <Stack.Screen name="GameSettings" component={GameSettings} />
+        <Stack.Screen name="Game" component={Game} />
+
       </Stack.Navigator>
     </NavigationContainer>
   );
