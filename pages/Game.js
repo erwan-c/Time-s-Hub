@@ -1,89 +1,160 @@
 import React, { useState, useEffect } from "react";
-import { StyleSheet, Text, View, Button } from "react-native";
-import { useRoute } from '@react-navigation/native';
-import TeamReadyModal from "../components/modals/TeamReadyModal"; // Import du composant de la modale
+import { StyleSheet, View, Alert } from "react-native";
+import { useRoute, useNavigation } from "@react-navigation/native";
+import GameHeader from "../components/game/GameHeader";
+import WordCard from "../components/game/WordCard";
+import WordButtons from "../components/game/WordButtons";
+import EndGameModal from "../components/modals/EndGameModal";
+import TeamReadyModal from "../components/modals/TeamReadyModal";
+import FinalWinnerModal from "../components/modals/FinalWinnerModal";
 
 export default function Game() {
   const route = useRoute();
+  const navigation = useNavigation();
   const { teams, words } = route.params;
 
-  // Convertir le nombre d'équipes en un tableau pour gérer les rotations d'équipes
-  const teamsArray = Array.from({ length: teams }, (_, index) => `Équipe ${index + 1}`);
+  const [teamsArray, setTeamsArray] = useState(
+    Array.from({ length: teams }, (_, index) => ({
+      name: `Équipe ${index + 1}`,
+      score: 0,
+    }))
+  );
 
-  // États pour garder une trace de l'indice du mot actuel, de l'équipe actuelle et du chrono
   const [currentWordIndex, setCurrentWordIndex] = useState(0);
   const [currentTeamIndex, setCurrentTeamIndex] = useState(0);
-  const [timer, setTimer] = useState(30); // Timer initial à 30 secondes
-  const [isTimerActive, setIsTimerActive] = useState(true);
-  const [isModalVisible, setIsModalVisible] = useState(false); // État pour afficher la modale
+  const [remainingWords, setRemainingWords] = useState([...words]);
+  const [usedWords, setUsedWords] = useState([]);
+  const [currentRound, setCurrentRound] = useState(1);
+  const [timer, setTimer] = useState(30);
+  const [isModalVisible, setIsModalVisible] = useState(false);
+  const [isEndGameModalVisible, setIsEndGameModalVisible] = useState(false);
+  const [isFinalWinnerModalVisible, setIsFinalWinnerModalVisible] =
+    useState(false);
 
-  // Fonction pour passer au mot suivant
-  const nextWord = () => {
-    if (currentWordIndex < words.length - 1) {
-      setCurrentWordIndex(currentWordIndex + 1);
-    }
+  const skipWord = () => {
+    setRemainingWords((prevWords) => {
+      const skippedWord = prevWords[currentWordIndex];
+      const updatedWords = [
+        ...prevWords.slice(0, currentWordIndex),
+        ...prevWords.slice(currentWordIndex + 1),
+        skippedWord,
+      ];
+      setCurrentWordIndex(
+        currentWordIndex >= updatedWords.length - 1 ? 0 : currentWordIndex
+      );
+      return updatedWords;
+    });
   };
 
-  // Fonction pour passer à l'équipe suivante toutes les 30 secondes
+  const validateWord = () => {
+    setRemainingWords((prevWords) => {
+      const validatedWord = prevWords[currentWordIndex];
+      const updatedWords = prevWords.filter(
+        (_, index) => index !== currentWordIndex
+      );
+      setUsedWords((prevUsed) => [...prevUsed, validatedWord]);
+      setCurrentWordIndex(
+        currentWordIndex >= updatedWords.length ? 0 : currentWordIndex
+      );
+      return updatedWords;
+    });
+
+    setTeamsArray((prevTeams) => {
+      const updatedTeams = [...prevTeams];
+      updatedTeams[currentTeamIndex].score += 1;
+      return updatedTeams;
+    });
+  };
+
+  const handleRoundEnd = () => {
+    if (currentRound === 3) {
+      handleFinalWinner();
+      return;
+    }
+
+    setIsEndGameModalVisible(true);
+  };
+
+  const handleFinalWinner = () => {
+    setIsFinalWinnerModalVisible(true);
+  };
+
+  const handleNextRound = () => {
+    setRemainingWords([...usedWords]);
+    setUsedWords([]);
+    setCurrentWordIndex(0);
+    setCurrentRound((prevRound) => prevRound + 1);
+    setTimer(30);
+    setIsEndGameModalVisible(false);
+
+    Alert.alert(
+      `Manche ${currentRound + 1}`,
+      currentRound === 2
+        ? `Nouvelle règle : Décrivez les mots avec des gestes uniquement !`
+        : "Nouvelle règle : Décrivez-les en un seul mot !"
+    );
+  };
+
   const switchTeam = () => {
-    setCurrentTeamIndex((prevIndex) => (prevIndex + 1) % teamsArray.length); // Passe à l'équipe suivante
-    setIsModalVisible(false); // Ferme la modale après confirmation
-    setTimer(30); // Réinitialiser le timer à 30 secondes après avoir changé d'équipe
+    setCurrentTeamIndex((prevIndex) => (prevIndex + 1) % teamsArray.length);
+    setIsModalVisible(false);
+    setTimer(30);
   };
 
-  // Fonction pour démarrer le chrono et changer l'équipe toutes les 30 secondes
   useEffect(() => {
-    if (isTimerActive) {
-      const interval = setInterval(() => {
-        setTimer((prevTime) => {
-          if (prevTime === 1) {
-            setIsModalVisible(true); // Affiche la modale quand le chrono atteint 0
-            return 30; // Réinitialiser le timer à 30 secondes
-          }
-          return prevTime - 1; // Décrémenter le timer chaque seconde
-        });
-      }, 1000); // Décrémenter chaque seconde
-
-      // Nettoyer l'intervalle lorsque le composant est démonté ou que le chrono est arrêté
-      return () => clearInterval(interval);
+    if (remainingWords.length === 0) {
+      handleRoundEnd();
     }
-  }, [isTimerActive, timer]);
+  }, [remainingWords]);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setTimer((prevTime) => {
+        if (prevTime === 1) {
+          setIsModalVisible(true);
+          return 30;
+        }
+        return prevTime - 1;
+      });
+    }, 1000);
+    return () => clearInterval(interval);
+  }, []);
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Jeu en Cours</Text>
+      <GameHeader
+        teamName={teamsArray[currentTeamIndex].name}
+        timer={timer}
+        round={currentRound}
+      />
 
-      {/* Afficher l'équipe actuelle */}
-      <Text style={styles.subTitle}>Équipe actuelle : {teamsArray[currentTeamIndex]}</Text>
+      {remainingWords.length > 0 ? (
+        <WordCard word={remainingWords[currentWordIndex]} />
+      ) : null}
 
-      {/* Afficher le chrono */}
-      <Text style={styles.timer}>Temps restant : {timer} s</Text>
+      <WordButtons onSkipWord={skipWord} onValidateWord={validateWord} />
 
-      {/* Affichage de la carte avec le mot */}
-      <View style={styles.card}>
-        <Text style={styles.word}>{words[currentWordIndex]}</Text>
-      </View>
-
-      {/* Boutons pour passer au mot suivant */}
-      <View style={styles.buttonsContainer}>
-        <Button
-          title="Suivant (Rouge)"
-          color="red"
-          onPress={nextWord}
-        />
-        <Button
-          title="Suivant (Vert)"
-          color="green"
-          onPress={nextWord}
-        />
-      </View>
-
-      {/* Utilisation du composant TeamReadyModal */}
       <TeamReadyModal
         visible={isModalVisible}
-        onClose={() => setIsModalVisible(false)} // Fonction pour fermer la modale
-        onConfirm={switchTeam} // Fonction pour changer d'équipe
-        teamName={teamsArray[(currentTeamIndex + 1) % teamsArray.length]} // Nom de l'équipe suivante
+        onClose={() => setIsModalVisible(false)}
+        onConfirm={switchTeam}
+        teamName={teamsArray[(currentTeamIndex + 1) % teamsArray.length].name}
+      />
+
+      <EndGameModal
+        visible={isEndGameModalVisible}
+        onClose={() => setIsEndGameModalVisible(false)}
+        onNextRound={handleNextRound}
+        teams={teamsArray}
+      />
+
+      <FinalWinnerModal
+        visible={isFinalWinnerModalVisible}
+        onClose={() => {
+          setIsFinalWinnerModalVisible(false);
+          navigation.navigate("Home");
+        }}
+        teams={teamsArray}
       />
     </View>
   );
@@ -94,43 +165,6 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: "#fff",
     padding: 20,
-    justifyContent: "center",
-  },
-  title: {
-    fontSize: 28,
-    fontWeight: "bold",
-    textAlign: "center",
-    color: "#4CAF50",
-    marginBottom: 20,
-  },
-  subTitle: {
-    fontSize: 20,
-    marginBottom: 10,
-    color: "#333",
-    fontWeight: "bold",
-  },
-  card: {
-    backgroundColor: "#f0f0f0",
-    padding: 20,
-    borderRadius: 10,
-    marginBottom: 20,
-    alignItems: "center",
-  },
-  word: {
-    fontSize: 24,
-    color: "#333",
-    fontWeight: "bold",
-  },
-  buttonsContainer: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    marginBottom: 20,
-  },
-  timer: {
-    fontSize: 24,
-    color: "#ff5733",
-    fontWeight: "bold",
-    marginBottom: 20,
-    textAlign: "center",
+    paddingTop: 200,
   },
 });

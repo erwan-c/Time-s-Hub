@@ -159,7 +159,6 @@ const motsParDefaut = [
   "Pêche",
   "Volleyball",
   "Escrime",
-
   "Mariage",
   "Anniversaire",
   "Vacances",

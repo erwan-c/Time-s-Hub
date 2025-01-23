@@ -34,18 +34,29 @@ export default function GameSettings({ navigation }) {
   }
 
   const handleSubmit = () => {
-    if (numberOfTeams && (gameTheme || isDefaultTheme)) {
-      if (isDefaultTheme) {
-        const selectedWords = getRandomWords(motsParDefaut, 40);
-        navigation.navigate("Game", {
-          teams: numberOfTeams,
-          words: selectedWords,
-        });
-      } else {
-        //       //Faire appel Backend API Chatgpt avec gameTheme
-      }
+    if (!numberOfTeams) {
+      Alert.alert("Oups", "Veuillez saisir le nombre d'équipes");
+      return;
+    }
+
+    if (isDefaultTheme) {
+      const selectedWords = getRandomWords(motsParDefaut, 40);
+      navigation.navigate("Game", {
+        teams: numberOfTeams,
+        words: selectedWords,
+      });
+    } else if (gameTheme) {
+     
+      const customWords = gameTheme.split(" ").filter(Boolean);
+      navigation.navigate("Game", {
+        teams: numberOfTeams,
+        words: customWords,
+      });
     } else {
-      Alert.alert("Oups", "Veuillez remplir tous les champs");
+      Alert.alert(
+        "Oups",
+        "Veuillez remplir tous les champs ou activer le thème par défaut"
+      );
     }
   };
 
@@ -66,7 +77,12 @@ export default function GameSettings({ navigation }) {
         <Text style={styles.switchLabel}>Par défaut</Text>
         <Switch
           value={isDefaultTheme}
-          onValueChange={(value) => setIsDefaultTheme(value)}
+          onValueChange={(value) => {
+            setIsDefaultTheme(value);
+            if (value) {
+              setGameTheme("");
+            }
+          }}
           style={styles.switch}
         />
       </View>
