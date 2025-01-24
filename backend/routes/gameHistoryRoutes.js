@@ -1,42 +1,11 @@
+
 const express = require('express');
 const router = express.Router();
-const GameHistory = require('../models/gameHistoryModel');
-const User = require('../models/userModel');
-const { protect } = require('../middleware/auth'); 
+const { protect } = require('../middleware/auth');  
+const { addGameHistory, getUserGameHistory } = require('../controllers/gameHistoryController');  
 
-router.post('/add', protect, async (req, res) => {
-  try {
-    const { theme, numberOfTeams, winningTeam } = req.body;
+router.post('/add', protect, addGameHistory);
 
-    const gameHistory = new GameHistory({
-      theme,
-      numberOfTeams,
-      winningTeam,
-      user: req.user.id 
-    });
-
-    await gameHistory.save();
-
-    res.status(201).json(gameHistory);
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: 'Erreur lors de l\'ajout de l\'historique du jeu' });
-  }
-});
-
-router.get('/user', protect, async (req, res) => {
-  try {
-    const gameHistories = await GameHistory.find({ user: req.user.id });
-
-    if (!gameHistories.length) {
-      return res.status(404).json({ message: 'Aucun historique de jeu trouvé pour cet utilisateur' });
-    }
-
-    res.status(200).json(gameHistories);
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: 'Erreur lors de la récupération de l\'historique du jeu' });
-  }
-});
+router.get('/user', protect, getUserGameHistory);
 
 module.exports = router;
