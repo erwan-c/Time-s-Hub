@@ -2,7 +2,6 @@ import React from "react";
 import { Modal, View, Text, StyleSheet, Button, FlatList } from "react-native";
 
 export default function EndGameModal({ visible, onClose, onNextRound, teams }) {
-  // Trouver l'équipe gagnante
   const maxScore = Math.max(...teams.map((team) => team.score));
   const winningTeams = teams.filter((team) => team.score === maxScore);
   const winnerNames = winningTeams.map((team) => team.name).join(", ");
