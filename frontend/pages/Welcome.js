@@ -85,7 +85,7 @@ export default function Welcome({ navigation }) {
         duration: 1000,
         useNativeDriver: true,
       }).start(() => {
-        navigation.replace("Home");
+        navigation.replace("Login");
       });
     }, 2000);
 

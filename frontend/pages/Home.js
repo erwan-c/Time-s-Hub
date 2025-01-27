@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { StyleSheet, Text, View, TouchableOpacity, Animated } from "react-native";
+import { StyleSheet, Text, View, TouchableOpacity, Animated, Button} from "react-native";
 
 export default function Home({navigation}) {
   const [scaleAnim] = useState(new Animated.Value(1)); 
@@ -28,6 +28,10 @@ export default function Home({navigation}) {
 
   return (
     <View style={styles.container}>
+      <Button
+              title="Compte"
+              onPress={() => navigation.navigate("Profil")}
+            />
       <Text style={styles.text}>Bienvenue sur la page d'accueil !</Text>
       
       <TouchableOpacity
