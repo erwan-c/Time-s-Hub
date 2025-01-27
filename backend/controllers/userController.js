@@ -19,7 +19,9 @@ const registerUser = async (req, res) => {
     const userExists = await User.findOne({ email });
 
     if (userExists) {
-      return res.status(400).json({ message: "L'utilisateur existe déjà" });
+      return res
+        .status(400)
+        .json({ message: "L'adresse mail est déjà utilisée" });
     }
 
     const user = await User.create({
@@ -30,10 +32,10 @@ const registerUser = async (req, res) => {
 
     if (user) {
       res.status(201).json({
-        _id: user._id, 
+        _id: user._id,
         name: user.name,
         email: user.email,
-        token: generateToken(user._id), 
+        token: generateToken(user._id),
       });
     } else {
       res.status(400).json({ message: "Données de l'utilisateur invalides" });
@@ -52,7 +54,7 @@ const loginUser = async (req, res) => {
 
     if (user && (await user.matchPassword(password))) {
       res.status(200).json({
-        _id: user._id, 
+        _id: user._id,
         name: user.name,
         email: user.email,
         token: generateToken(user._id),
@@ -75,4 +77,55 @@ const getUsers = async (req, res) => {
   }
 };
 
-module.exports = { registerUser, loginUser, getUsers };
+// @route DELETE /api/users/:id 
+const deleteUser = async (req, res) => {
+  try {
+    const userId = req.user.id; 
+    const user = await User.findById(userId);
+
+    if (!user) {
+      return res.status(404).json({ message: "Utilisateur non trouvé" });
+    }
+
+    await user.remove();
+    res.status(200).json({ message: "Compte supprimé avec succès" });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+// @route PUT /api/users/update 
+const updateUser = async (req, res) => {
+  const { name, email, password } = req.body;
+
+  try {
+    const user = await User.findById(req.user.id);
+
+    if (!user) {
+      return res.status(404).json({ message: "Utilisateur non trouvé" });
+    }
+
+    if (name) user.name = name;
+    if (email) user.email = email;
+    if (password) user.password = password;
+
+    const updatedUser = await user.save();
+
+    res.status(200).json({
+      _id: updatedUser._id,
+      name: updatedUser.name,
+      email: updatedUser.email,
+      token: generateToken(updatedUser._id),
+    });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+module.exports = {
+    registerUser,
+    loginUser,
+    getUsers,
+    deleteUser,
+    updateUser,
+  };
