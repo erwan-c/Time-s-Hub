@@ -1,13 +1,5 @@
 import React, { useState } from "react";
-import {
-  StyleSheet,
-  Text,
-  View,
-  TextInput,
-  Button,
-  Alert,
-  Switch,
-} from "react-native";
+import { StyleSheet, Text, View, TextInput, Button, Alert, Switch, TouchableOpacity } from "react-native";
 import motsParDefaut from "../constantes/MotsParDefaults";
 
 export default function GameSettings({ navigation }) {
@@ -46,7 +38,6 @@ export default function GameSettings({ navigation }) {
         words: selectedWords,
       });
     } else if (gameTheme) {
-     
       const customWords = gameTheme.split(" ").filter(Boolean);
       navigation.navigate("Game", {
         teams: numberOfTeams,
@@ -62,6 +53,9 @@ export default function GameSettings({ navigation }) {
 
   return (
     <View style={styles.container}>
+       <TouchableOpacity style={styles.backButton} onPress={() => navigation.navigate("Home")}>
+              <Text style={styles.backText}>← Retour</Text>
+            </TouchableOpacity>
       <Text style={styles.title}>Paramètres du Jeu</Text>
       <Text style={styles.labelCategories}>Nombre d'équipes :</Text>
       <TextInput
@@ -71,7 +65,7 @@ export default function GameSettings({ navigation }) {
         onChangeText={handleNumberInputChange}
         placeholder="Entrez le nombre d'équipes"
       />
-      <Text style={styles.labelCategories}>Thème de la partie : </Text>
+      <Text style={styles.labelCategories}>Thème de la partie :</Text>
 
       <View style={styles.themeSwitchContainer}>
         <Text style={styles.switchLabel}>Par défaut</Text>
@@ -87,16 +81,16 @@ export default function GameSettings({ navigation }) {
         />
       </View>
       {!isDefaultTheme && (
-        <>
-          <TextInput
-            style={styles.input}
-            value={gameTheme}
-            onChangeText={handleThemeInputChange}
-            placeholder="Entrez le thème (max 5 mots)"
-          />
-        </>
+        <TextInput
+          style={styles.input}
+          value={gameTheme}
+          onChangeText={handleThemeInputChange}
+          placeholder="Entrez le thème (max 5 mots)"
+        />
       )}
       <Button title="Confirmer" onPress={handleSubmit} />
+
+    
     </View>
   );
 }
@@ -143,4 +137,6 @@ const styles = StyleSheet.create({
     fontSize: 18,
     color: "#333",
   },
+  backButton: { position: "absolute", top: 50, left: 20 },
+  backText: { fontSize: 18, color: "#007BFF" },
 });

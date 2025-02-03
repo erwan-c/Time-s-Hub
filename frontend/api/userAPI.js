@@ -1,31 +1,24 @@
-import axios from "axios";
+import axiosInstance from "../axiosInstance";
 
-const API_URL = "http://192.168.43.111:5000/api/users"; // URL de ton backend
-
-// Enregistrer un utilisateur
 export const registerUser = async (data) => {
-  const response = await axios.post(`${API_URL}/register`, data);
+  const response = await axiosInstance.post("/users/register", data);
   return response.data;
 };
 
-// Connecter un utilisateur
 export const loginUser = async (data) => {
-  const response = await axios.post(`${API_URL}/login`, data);
+  console.log('yo')
+
+  const response = await axiosInstance.post("/users/login", data);
+  console.log(response)
   return response.data;
 };
 
-// Mettre à jour les informations d'un utilisateur
-export const updateUser = async (token, data) => {
-  const response = await axios.put(`${API_URL}/update`, data, {
-    headers: { Authorization: `Bearer ${token}` },
-  });
+export const updateUser = async (data) => {
+  const response = await axiosInstance.put("/users/update", data);
   return response.data;
 };
 
-// Supprimer un compte utilisateur
-export const deleteUser = async (token) => {
-  const response = await axios.delete(`${API_URL}/delete`, {
-    headers: { Authorization: `Bearer ${token}` },
-  });
+export const deleteUser = async () => {
+  const response = await axiosInstance.delete("/users/delete");
   return response.data;
 };
