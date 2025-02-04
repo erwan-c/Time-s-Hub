@@ -24,8 +24,8 @@ const getChatGPTWords = async (req, res) => {
     'Sensation'
   ]
   try {
-    // const response = await callChatGPT(wordsArray);
-    const response = testResponse;
+    const response = await callChatGPT(wordsArray);
+    // const response = testResponse;
 
     res.status(200).json({ response });
   } catch (error) {
