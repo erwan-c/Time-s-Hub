@@ -34,10 +34,10 @@ axiosInstance.interceptors.response.use(
   (response) => response,
   (error) => {
     if (error.response) {
-      console.error("Erreur de réponse du serveur:", error.response);
-      if (error.response.status === 401) {
-        console.error("Token invalide ou expiré. Veuillez vous reconnecter.");
-      }
+      // console.error("Erreur de réponse du serveur:", error.response);
+      // if (error.response.status === 401) {
+      //   console.error("Token invalide ou expiré. Veuillez vous reconnecter.");
+      // }
     } else if (error.request) {
       console.error("Aucune réponse reçue du serveur:", error.request);
     } else {

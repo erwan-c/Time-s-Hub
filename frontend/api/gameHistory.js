@@ -7,6 +7,5 @@ export const addGameHistory = async (data) => {
 
 export const getUserGameHistory = async () => {
   const response = await axiosInstance.get("/gameHistory/user");
-  console.log(response)
   return response.data;
 };

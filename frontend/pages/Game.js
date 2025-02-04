@@ -7,14 +7,15 @@ import WordButtons from "../components/game/WordButtons";
 import EndGameModal from "../components/modals/EndGameModal";
 import TeamReadyModal from "../components/modals/TeamReadyModal";
 import FinalWinnerModal from "../components/modals/FinalWinnerModal";
+import useAuth from "../hook/useAuth";
+import { addGameHistory } from "../api/gameHistory";
 
 export default function Game() {
   const route = useRoute();
   const navigation = useNavigation();
-  const { teams, words } = route.params;
-
+  const { numberOfTeams, words, theme } = route.params;
   const [teamsArray, setTeamsArray] = useState(
-    Array.from({ length: teams }, (_, index) => ({
+    Array.from({ length: numberOfTeams }, (_, index) => ({
       name: `Équipe ${index + 1}`,
       score: 0,
     }))
@@ -30,6 +31,26 @@ export default function Game() {
   const [isEndGameModalVisible, setIsEndGameModalVisible] = useState(false);
   const [isFinalWinnerModalVisible, setIsFinalWinnerModalVisible] =
     useState(false);
+  const { user } = useAuth();
+
+  const addHistoryGameToUser = async () => {
+    if (user) {
+      try {
+        const winningTeam = teamsArray.reduce((prev, current) =>
+          prev.score > current.score ? prev : current
+        ).name;
+
+        await addGameHistory({ theme, numberOfTeams, winningTeam });
+      
+      } catch (error) {
+        console.error(error)
+        Alert.alert(
+          "Oups",
+          "Erreur lors de l'enregistrement dans l'historique"
+        );
+      }
+    }
+  };
 
   const skipWord = () => {
     setRemainingWords((prevWords) => {
@@ -87,12 +108,6 @@ export default function Game() {
     setTimer(30);
     setIsEndGameModalVisible(false);
 
-    Alert.alert(
-      `Manche ${currentRound + 1}`,
-      currentRound === 2
-        ? `Nouvelle règle : Décrivez les mots avec des gestes uniquement !`
-        : "Nouvelle règle : Décrivez-les en un seul mot !"
-    );
   };
 
   const switchTeam = () => {
@@ -151,6 +166,7 @@ export default function Game() {
       <FinalWinnerModal
         visible={isFinalWinnerModalVisible}
         onClose={() => {
+          addHistoryGameToUser();
           setIsFinalWinnerModalVisible(false);
           navigation.navigate("Home");
         }}

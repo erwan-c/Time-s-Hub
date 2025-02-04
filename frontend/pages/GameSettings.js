@@ -1,11 +1,23 @@
 import React, { useState } from "react";
-import { StyleSheet, Text, View, TextInput, Button, Alert, Switch, TouchableOpacity } from "react-native";
+import {
+  StyleSheet,
+  Text,
+  View,
+  TextInput,
+  Button,
+  Alert,
+  Switch,
+  TouchableOpacity,
+  ActivityIndicator
+} from "react-native";
 import motsParDefaut from "../constantes/MotsParDefaults";
+import { generateWords } from "../api/wordsAPI";
 
 export default function GameSettings({ navigation }) {
   const [numberOfTeams, setNumberOfTeams] = useState("");
   const [gameTheme, setGameTheme] = useState("");
   const [isDefaultTheme, setIsDefaultTheme] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleNumberInputChange = (text) => {
     if (/^\d+$/.test(text) || text === "") {
@@ -25,7 +37,7 @@ export default function GameSettings({ navigation }) {
     return shuffled.slice(0, count);
   }
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     if (!numberOfTeams) {
       Alert.alert("Oups", "Veuillez saisir le nombre d'équipes");
       return;
@@ -34,15 +46,29 @@ export default function GameSettings({ navigation }) {
     if (isDefaultTheme) {
       const selectedWords = getRandomWords(motsParDefaut, 40);
       navigation.navigate("Game", {
-        teams: numberOfTeams,
+        numberOfTeams: numberOfTeams,
         words: selectedWords,
+        theme: "Par défaut",
       });
     } else if (gameTheme) {
-      const customWords = gameTheme.split(" ").filter(Boolean);
-      navigation.navigate("Game", {
-        teams: numberOfTeams,
-        words: customWords,
-      });
+      try {
+        setIsLoading(true);
+        const customWords = gameTheme.split(" ").filter(Boolean);
+        const wordsObject = { wordsArray: customWords };
+        const generatedWords = await generateWords(wordsObject);
+        console.log(generatedWords);
+
+        navigation.navigate("Game", {
+          numberOfTeams: numberOfTeams,
+          words: generatedWords.response,
+          theme: gameTheme,
+        });
+      } catch (error) {
+        console.error("Erreur lors de la génération des mots:", error);
+        Alert.alert("Erreur", "Impossible de générer les mots.");
+      } finally {
+        setIsLoading(false);
+      }
     } else {
       Alert.alert(
         "Oups",
@@ -53,44 +79,54 @@ export default function GameSettings({ navigation }) {
 
   return (
     <View style={styles.container}>
-       <TouchableOpacity style={styles.backButton} onPress={() => navigation.navigate("Home")}>
-              <Text style={styles.backText}>← Retour</Text>
-            </TouchableOpacity>
-      <Text style={styles.title}>Paramètres du Jeu</Text>
-      <Text style={styles.labelCategories}>Nombre d'équipes :</Text>
-      <TextInput
-        style={styles.input}
-        keyboardType="numeric"
-        value={numberOfTeams}
-        onChangeText={handleNumberInputChange}
-        placeholder="Entrez le nombre d'équipes"
-      />
-      <Text style={styles.labelCategories}>Thème de la partie :</Text>
+      {isLoading ? (
+        <View style={styles.loaderContainer}>
+          <ActivityIndicator size="large" color="#007BFF" />
+          <Text style={styles.loadingText}>Chargement des mots...</Text>
+        </View>
+      ) : (
+        <>
+          <TouchableOpacity
+            style={styles.backButton}
+            onPress={() => navigation.navigate("Home")}
+          >
+            <Text style={styles.backText}>← Retour</Text>
+          </TouchableOpacity>
+          <Text style={styles.title}>Paramètres du Jeu</Text>
+          <Text style={styles.labelCategories}>Nombre d'équipes :</Text>
+          <TextInput
+            style={styles.input}
+            keyboardType="numeric"
+            value={numberOfTeams}
+            onChangeText={handleNumberInputChange}
+            placeholder="Entrez le nombre d'équipes"
+          />
+          <Text style={styles.labelCategories}>Thème de la partie :</Text>
 
-      <View style={styles.themeSwitchContainer}>
-        <Text style={styles.switchLabel}>Par défaut</Text>
-        <Switch
-          value={isDefaultTheme}
-          onValueChange={(value) => {
-            setIsDefaultTheme(value);
-            if (value) {
-              setGameTheme("");
-            }
-          }}
-          style={styles.switch}
-        />
-      </View>
-      {!isDefaultTheme && (
-        <TextInput
-          style={styles.input}
-          value={gameTheme}
-          onChangeText={handleThemeInputChange}
-          placeholder="Entrez le thème (max 5 mots)"
-        />
+          <View style={styles.themeSwitchContainer}>
+            <Text style={styles.switchLabel}>Par défaut</Text>
+            <Switch
+              value={isDefaultTheme}
+              onValueChange={(value) => {
+                setIsDefaultTheme(value);
+                if (value) {
+                  setGameTheme("");
+                }
+              }}
+              style={styles.switch}
+            />
+          </View>
+          {!isDefaultTheme && (
+            <TextInput
+              style={styles.input}
+              value={gameTheme}
+              onChangeText={handleThemeInputChange}
+              placeholder="Entrez le thème (max 5 mots)"
+            />
+          )}
+          <Button title="Confirmer" onPress={handleSubmit} />
+        </>
       )}
-      <Button title="Confirmer" onPress={handleSubmit} />
-
-    
     </View>
   );
 }
@@ -139,4 +175,9 @@ const styles = StyleSheet.create({
   },
   backButton: { position: "absolute", top: 50, left: 20 },
   backText: { fontSize: 18, color: "#007BFF" },
+  loaderContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+  },
 });

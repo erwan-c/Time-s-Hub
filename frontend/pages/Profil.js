@@ -19,8 +19,7 @@ export default function Profil({ navigation }) {
       const fetchGameHistory = async () => {
         try {
           const historyData = await getUserGameHistory();
-          console.log(historyData);
-          setGameHistory(historyData); // Assurez-vous que les données sont sous forme de tableau
+          setGameHistory(historyData); 
         } catch (error) {
           console.error("Erreur lors de la récupération de l'historique des jeux:", error);
           Alert.alert("Erreur", "Impossible de récupérer l'historique des jeux.");
