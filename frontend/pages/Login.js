@@ -1,5 +1,7 @@
 import React, { useState } from "react";
 import useAuth from "../hook/useAuth";
+import Input from "../components/input";
+import Button from "../components/button";
 import {
   StyleSheet,
   View,
@@ -7,8 +9,9 @@ import {
   TextInput,
   TouchableOpacity,
   Alert,
+  Image,
 } from "react-native";
-
+import { stylesGlobal } from "../styles";
 export default function Login({ navigation }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -30,32 +33,27 @@ export default function Login({ navigation }) {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Connexion</Text>
+      <Image source={require("../assets/logoTimes.png")} style={styles.logo} />
+      <Text style={stylesGlobal.title}>Connexion</Text>
 
-      <TextInput
-        style={styles.input}
-        placeholder="Email"
-        value={email}
-        onChangeText={setEmail}
-      />
-      <TextInput
-        style={styles.input}
+      <Input placeholder="Email" value={email} onChangeText={setEmail} />
+      <Input
         placeholder="Mot de passe"
-        secureTextEntry
         value={password}
         onChangeText={setPassword}
+        secure={true}
       />
 
-      <TouchableOpacity style={styles.button} onPress={handleSubmit}>
-        <Text style={styles.buttonText}>Se connecter</Text>
-      </TouchableOpacity>
+      <Button text="Se connecter" type="primary" onPress={handleSubmit} />
 
       <TouchableOpacity onPress={() => navigation.navigate("Register")}>
-        <Text style={styles.linkText}>Pas encore de compte ? Inscription</Text>
+        <Text style={stylesGlobal.linkText}>
+          Pas encore de compte ? Inscription
+        </Text>
       </TouchableOpacity>
 
       <TouchableOpacity onPress={() => navigation.navigate("Home")}>
-        <Text style={styles.linkText}>Mode hors ligne</Text>
+        <Text style={stylesGlobal.linkText}>Mode hors ligne</Text>
       </TouchableOpacity>
     </View>
   );
@@ -67,31 +65,10 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     padding: 20,
-    backgroundColor: "#f7f7f7",
+    backgroundColor: "#000",
   },
-  title: {
-    fontSize: 28,
-    fontWeight: "bold",
-    color: "#4caf50",
-    marginBottom: 20,
+  logo: {
+    width: "60%",
+    resizeMode: "contain",
   },
-  input: {
-    width: "100%",
-    borderWidth: 1,
-    borderColor: "#ddd",
-    padding: 12,
-    borderRadius: 8,
-    marginBottom: 15,
-    backgroundColor: "#fff",
-  },
-  button: {
-    backgroundColor: "#4caf50",
-    padding: 15,
-    borderRadius: 8,
-    width: "100%",
-    alignItems: "center",
-    marginVertical: 10,
-  },
-  buttonText: { color: "#fff", fontSize: 18, fontWeight: "bold" },
-  linkText: { color: "#007BFF", marginTop: 10, fontSize: 16 },
 });

@@ -1,51 +1,51 @@
 import React, { useState } from "react";
-import { StyleSheet, Text, View, TouchableOpacity, Animated, Button, ImageBackground } from "react-native";
+import {
+  StyleSheet,
+  Text,
+  View,
+  TouchableOpacity,
+  Animated,
+  ImageBackground,
+  Image,
+} from "react-native";
+import Icon from "react-native-vector-icons/AntDesign";
+import { stylesGlobal } from "../styles";
+import Button from "../components/button";
+import Video from "react-native-video"; // Import de la vidéo
 
 export default function Home({ navigation }) {
-  const [scaleAnim] = useState(new Animated.Value(1));
-  const [colorAnim] = useState(new Animated.Value(0));
-
-  const handlePressIn = () => {
-    Animated.sequence([
-      Animated.spring(scaleAnim, {
-        toValue: 0.9,
-        useNativeDriver: true,
-      }),
-      Animated.spring(scaleAnim, {
-        toValue: 1,
-        useNativeDriver: true,
-      }),
-    ]).start();
-
-    navigation.navigate("GameSettings");
-  };
-
-  const colorInterpolate = colorAnim.interpolate({
-    inputRange: [0, 1],
-    outputRange: ["#ff6347", "#ff1493"],
-  });
-
   return (
-    <ImageBackground source={{ uri: 'https://your-image-url.jpg' }} style={styles.backgroundImage}>
-      <View style={styles.container}>
-        <Button title="Compte" onPress={() => navigation.navigate("Profil")} />
-        <Text style={styles.text}>Bienvenue sur la page d'accueil !</Text>
+    <View style={styles.container}>
+       
+      <TouchableOpacity
+        style={styles.profileIcon}
+        onPress={() => navigation.navigate("Profil")}
+      >
+        <Icon
+          name="user"
+          size={35}
+          color="#FF9000"
+          style={styles.profileImage}
+        />
+      </TouchableOpacity>
+      <Image source={require("../assets/logoTimes.png")} style={styles.logo} />
 
-        <TouchableOpacity style={styles.button} onPressIn={handlePressIn}>
-          <Animated.View
-            style={[
-              styles.buttonContent,
-              {
-                transform: [{ scale: scaleAnim }],
-                backgroundColor: colorInterpolate,
-              },
-            ]}
-          >
-            <Text style={styles.buttonText}>JOUER</Text>
-          </Animated.View>
-        </TouchableOpacity>
+      <Text style={stylesGlobal.title}>Bienvenue!</Text>
+
+      <View style={styles.buttonContainer}>
+        <Button
+          text="JOUER"
+          type="play"
+          onPress={() => navigation.navigate("GameSettings")}
+        />
+
+        <Button
+          text="Comment jouer ?"
+          type="primary"
+          onPress={() => navigation.navigate("Rules")}
+        />
       </View>
-    </ImageBackground>
+    </View>
   );
 }
 
@@ -55,39 +55,33 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     padding: 20,
-    zIndex: 2, // Ensure buttons are above the background image
+    backgroundColor: "#000",
   },
-  text: {
-    fontSize: 24,
-    fontWeight: "bold",
-    color: "#fff",
-    marginBottom: 30,
+ 
+  profileIcon: {
+    position: "absolute",
+    top: 60,
+    right: 20,
+    zIndex: 10,
   },
-  button: {
-    justifyContent: "center",
+
+  profileImage: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+  },
+  buttonContainer: {
     alignItems: "center",
-  },
-  buttonContent: {
-    width: 150,
-    height: 150,
-    borderRadius: 75,
     justifyContent: "center",
-    alignItems: "center",
-    backgroundColor: "#ff6347",
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.3,
-    shadowRadius: 4,
-    elevation: 5, // Add elevation for Android shadow
+    gap: 30, 
   },
-  buttonText: {
-    fontSize: 18,
-    fontWeight: "bold",
-    color: "#fff",
-  },
-  backgroundImage: {
-    flex: 1,
-    resizeMode: "cover", // Ensure background image covers the entire screen
-    justifyContent: "center",
+  logo: {
+    position: "absolute",
+    top: 60,
+    left: 1,
+    width: 200, 
+    height: 40, 
+    resizeMode: "contain",
   },
 });
+

@@ -9,15 +9,15 @@ const WordCard = ({ word }) => (
 
 const styles = StyleSheet.create({
   card: {
-    backgroundColor: "#f0f0f0",
-    padding: 20,
+    backgroundColor: "#FF9000",
+    padding: 25,
     borderRadius: 10,
     marginBottom: 20,
     alignItems: "center",
   },
   word: {
-    fontSize: 24,
-    color: "#333",
+    fontSize: 26,
+    color: "#000000",
     fontWeight: "bold",
   },
 });

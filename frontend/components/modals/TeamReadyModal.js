@@ -1,5 +1,7 @@
 import React from "react";
-import { View, Modal, Text, Button, StyleSheet } from "react-native";
+import { View, Modal, Text, StyleSheet } from "react-native";
+import Button from "../button";
+import { stylesGlobal } from "../../styles";
 
 const TeamReadyModal = ({ visible, onClose, onConfirm, teamName }) => {
   return (
@@ -11,15 +13,11 @@ const TeamReadyModal = ({ visible, onClose, onConfirm, teamName }) => {
     >
       <View style={styles.modalContainer}>
         <View style={styles.modalContent}>
-          <Text style={styles.modalText}>
+          <Text style={stylesGlobal.info}>
             {teamName} est-elle prête à jouer ?
           </Text>
           <View style={styles.modalButtons}>
-            <Button
-              title="Oui, prête !"
-              onPress={onConfirm}
-              color="green"
-            />
+            <Button text="Oui, prête !" onPress={onConfirm} type="primary" />
           </View>
         </View>
       </View>
@@ -32,21 +30,16 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: "rgba(0, 0, 0, 0.5)", 
+    backgroundColor: "#000",
   },
   modalContent: {
     width: "80%",
-    backgroundColor: "white",
+    backgroundColor: "#212121",
     padding: 20,
     borderRadius: 10,
     alignItems: "center",
   },
-  modalText: {
-    fontSize: 20,
-    marginBottom: 20,
-    color: "#333",
-    textAlign: "center",
-  },
+
   modalButtons: {
     flexDirection: "row",
     justifyContent: "space-around",

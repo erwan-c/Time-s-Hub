@@ -1,6 +1,7 @@
 import React from "react";
-import { Modal, View, Text, StyleSheet, Button, FlatList } from "react-native";
-
+import { Modal, View, Text, StyleSheet, FlatList } from "react-native";
+import Button from "../button";
+import { stylesGlobal } from "../../styles";
 export default function EndGameModal({ visible, onClose, onNextRound, teams }) {
   const maxScore = Math.max(...teams.map((team) => team.score));
   const winningTeams = teams.filter((team) => team.score === maxScore);
@@ -10,24 +11,28 @@ export default function EndGameModal({ visible, onClose, onNextRound, teams }) {
     <Modal visible={visible} animationType="slide" transparent={true}>
       <View style={styles.overlay}>
         <View style={styles.modalContainer}>
-          <Text style={styles.title}>Fin de la Manche</Text>
-          <Text style={styles.subtitle}>
-            Équipe(s) gagnante(s) : {winnerNames} avec {maxScore} point(s) !
+          <Text style={stylesGlobal.subTitle}>Fin de la Manche</Text>
+          <Text style={stylesGlobal.info}>
+            Winner : {winnerNames} !
           </Text>
 
-          <Text style={styles.sectionTitle}>Scores des équipes :</Text>
+          <Text style={stylesGlobal.sectionTitle}>Scores des équipes :</Text>
           <FlatList
             data={teams}
             keyExtractor={(item) => item.name}
             renderItem={({ item }) => (
-              <Text style={styles.teamScore}>
+              <Text style={stylesGlobal.teamScore}>
                 {item.name} : {item.score} point(s)
               </Text>
             )}
           />
 
           <View style={styles.buttonContainer}>
-            <Button title="Prochaine Manche" onPress={onNextRound} color="#4CAF50" />
+            <Button
+              text="Prochaine Manche"
+              type="primary"
+              onPress={onNextRound}
+            />
           </View>
         </View>
       </View>
@@ -38,42 +43,18 @@ export default function EndGameModal({ visible, onClose, onNextRound, teams }) {
 const styles = StyleSheet.create({
   overlay: {
     flex: 1,
-    backgroundColor: "rgba(0, 0, 0, 0.5)",
+    backgroundColor: "#000",
     justifyContent: "center",
     alignItems: "center",
   },
   modalContainer: {
     width: "90%",
-    backgroundColor: "#fff",
+    backgroundColor: "#212121",
     borderRadius: 10,
     padding: 20,
     alignItems: "center",
-  },
-  title: {
-    fontSize: 24,
-    fontWeight: "bold",
-    color: "#333",
-    marginBottom: 10,
-  },
-  subtitle: {
-    fontSize: 18,
-    textAlign: "center",
-    color: "#666",
-    marginBottom: 20,
-  },
-  sectionTitle: {
-    fontSize: 20,
-    fontWeight: "bold",
-    color: "#4CAF50",
-    marginBottom: 10,
-    alignSelf: "flex-start",
-  },
-  teamScore: {
-    fontSize: 16,
-    color: "#333",
-    marginBottom: 5,
-    alignSelf: "flex-start",
-  },
+  }, 
+
   buttonContainer: {
     flexDirection: "row",
     justifyContent: "space-around",

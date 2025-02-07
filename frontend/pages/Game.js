@@ -178,8 +178,10 @@ export default function Game() {
 
 const styles = StyleSheet.create({
   container: {
+    justifyContent :"center",
+    alignItems:"center",
     flex: 1,
-    backgroundColor: "#fff",
+    backgroundColor: "#000",
     padding: 20,
     paddingTop: 200,
   },

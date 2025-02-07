@@ -9,6 +9,9 @@ import {
 } from "react-native";
 import useAuth from "../hook/useAuth";
 import { getUserGameHistory } from "../api/gameHistory";
+import { stylesGlobal } from "../styles";
+import Button from "../components/button";
+import BackButton from "../components/backButton";
 
 export default function Profil({ navigation }) {
   const { user, logout } = useAuth();
@@ -19,11 +22,8 @@ export default function Profil({ navigation }) {
       const fetchGameHistory = async () => {
         try {
           const historyData = await getUserGameHistory();
-          setGameHistory(historyData); 
-        } catch (error) {
-          console.error("Erreur lors de la récupération de l'historique des jeux:", error);
-          Alert.alert("Erreur", "Impossible de récupérer l'historique des jeux.");
-        }
+          setGameHistory(historyData);
+        } catch (error) {}
       };
       fetchGameHistory();
     }
@@ -32,9 +32,25 @@ export default function Profil({ navigation }) {
   if (!user) {
     return (
       <View style={styles.container}>
-        <Text style={styles.errorText}>
-          Vous devez être connecté pour voir cette page.
-        </Text>
+        <BackButton />
+        <View style={styles.center}>
+          <Text style={stylesGlobal.errorTitle}>Attention</Text>
+          <Text style={stylesGlobal.errorText}>
+            Vous devez être connecté pour voir cette page.
+          </Text>
+        </View>
+        <View style={styles.buttonContainer}>
+          <Button
+            text="Se connecter"
+            type="primary"
+            onPress={() => navigation.navigate("Login")}
+          />
+          <Button
+            text="Rester hors ligne"
+            type="primary"
+            onPress={() => navigation.navigate("Home")}
+          />
+        </View>
       </View>
     );
   }
@@ -57,46 +73,53 @@ export default function Profil({ navigation }) {
         <Text style={styles.bold}>Nombre d'équipes :</Text> {item.numberOfTeams}
       </Text>
       <Text style={styles.historyText}>
-        <Text style={styles.bold}>Date :</Text> {new Date(item.createdAt).toLocaleDateString()}
+        <Text style={styles.bold}>Date :</Text>{" "}  
+        {new Date(item.createdAt).toLocaleDateString()}
       </Text>
     </View>
   );
 
   return (
-    <View style={styles.container}>
-      <TouchableOpacity
-        style={styles.backButton}
-        onPress={() => navigation.navigate("Home")}
-      >
-        <Text style={styles.backText}>← Retour</Text>
-      </TouchableOpacity>
-
-      <Text style={styles.title}>Profil</Text>
-
-      <View style={styles.infoContainer}>
-        <Text style={styles.label}>Nom :</Text>
-        <Text style={styles.info}>{user.name}</Text>
+    <View style={styles.containerConnected}>
+      <BackButton />
+      <View style={styles.categorie}>
+        <View style={styles.center}>
+          <Text style={stylesGlobal.title}>Profil</Text>
+        </View>
+        <View style={styles.infoContainer}>
+          <Text style={stylesGlobal.label}>Nom :</Text>
+          <Text style={stylesGlobal.info}>{user.name}</Text>
+        </View>
+        <View style={styles.infoContainer}>
+          <Text style={stylesGlobal.label}>Email :</Text>
+          <Text style={stylesGlobal.info}>{user.email}</Text>
+        </View>
       </View>
-      <View style={styles.infoContainer}>
-        <Text style={styles.label}>Email :</Text>
-        <Text style={styles.info}>{user.email}</Text>
+      <Button text="Se déconnecter" type="primary" onPress={handleLogout} />
+
+      <View style={styles.categorie}>
+        <View style={styles.center}>
+          <Text style={stylesGlobal.title}>Historique </Text>
+        </View>
+        {gameHistory.length > 0 ? (
+          <View style={styles.historyContainer}>
+          <FlatList
+            data={gameHistory}
+            renderItem={renderGameHistory}
+            keyExtractor={(item) => item._id}
+            style={styles.historyList}
+          />
+        </View>
+        
+        ) : (
+          <View style={styles.center}>
+            <Text style={stylesGlobal.errorTitle}>Attention</Text>
+            <Text style={stylesGlobal.errorText}>
+              Aucun historique de jeu trouvé.
+            </Text>
+          </View>
+        )}
       </View>
-
-      <TouchableOpacity style={styles.button} onPress={handleLogout}>
-        <Text style={styles.buttonText}>Se déconnecter</Text>
-      </TouchableOpacity>
-
-      <Text style={styles.titleHistorique}>Historique</Text>
-      {gameHistory.length > 0 ? (
-        <FlatList
-          data={gameHistory}
-          renderItem={renderGameHistory}
-          keyExtractor={(item) => item._id}
-          style={styles.historyList}
-        />
-      ) : (
-        <Text style={styles.errorText}>Aucun historique de jeu trouvé.</Text>
-      )}
     </View>
   );
 }
@@ -104,67 +127,35 @@ export default function Profil({ navigation }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    padding: 30,
+    backgroundColor: "#000",
+    justifyContent: "center",
+  },
+  containerConnected: {
+    flex: 1,
+    padding: 20,
+    backgroundColor: "#000",
+  },
+
+  titleContainer: {
+    marginTop: 50,
+    marginBottom: 20,
+  },
+  categorie: {
+    marginTop: 50,
+    marginBottom: 20,
+  },
+  center: {
     justifyContent: "center",
     alignItems: "center",
-    padding: 20,
-    backgroundColor: "#fff",
   },
-  title: {
-    fontSize: 28,
-    fontWeight: "bold",
-    color: "#4caf50",
-    marginBottom: 20,
-    marginTop: 70,
-  },
-  titleHistorique: {
-    fontSize: 28,
-    fontWeight: "bold",
-    color: "#4caf50",
-    marginBottom: 5,
-    marginTop: 50,
-  },
-  errorText: {
-    fontSize: 18,
-    color: "red",
-    textAlign: "center",
-    marginTop: 20,
+  buttonContainer: {
+    gap: 20,
   },
   infoContainer: {
     marginVertical: 10,
     width: "100%",
     paddingHorizontal: 20,
-  },
-  label: {
-    fontSize: 18,
-    fontWeight: "600",
-    color: "#333",
-  },
-  info: {
-    fontSize: 16,
-    color: "#555",
-    marginTop: 5,
-  },
-  button: {
-    backgroundColor: "#ff4444",
-    padding: 15,
-    borderRadius: 8,
-    width: "100%",
-    alignItems: "center",
-    marginTop: 20,
-  },
-  buttonText: {
-    color: "#fff",
-    fontSize: 18,
-    fontWeight: "bold",
-  },
-  backButton: {
-    position: "absolute",
-    top: 50,
-    left: 20,
-  },
-  backText: {
-    fontSize: 18,
-    color: "#007BFF",
   },
   historyList: {
     marginTop: 30,
@@ -172,15 +163,21 @@ const styles = StyleSheet.create({
   },
   historyItem: {
     padding: 10,
-    backgroundColor: "#f1f1f1",
+    backgroundColor: "#212121",
     marginBottom: 10,
     borderRadius: 5,
   },
   historyText: {
     fontSize: 16,
-    color: "#333",
+    color: "#c6c6c6",
   },
   bold: {
     fontWeight: "bold",
+    color: "#FF9000",
   },
+  historyContainer: {
+    maxHeight: 400, 
+    width: "100%",
+  },
+  
 });

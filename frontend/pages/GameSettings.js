@@ -3,16 +3,16 @@ import {
   StyleSheet,
   Text,
   View,
-  TextInput,
-  Button,
   Alert,
   Switch,
-  TouchableOpacity,
-  ActivityIndicator
+  ActivityIndicator,
 } from "react-native";
 import motsParDefaut from "../constantes/MotsParDefaults";
 import { generateWords } from "../api/wordsAPI";
-
+import BackButton from "../components/backButton";
+import { stylesGlobal } from "../styles";
+import Input from "../components/input";
+import Button from "../components/button";
 export default function GameSettings({ navigation }) {
   const [numberOfTeams, setNumberOfTeams] = useState("");
   const [gameTheme, setGameTheme] = useState("");
@@ -56,7 +56,6 @@ export default function GameSettings({ navigation }) {
         const customWords = gameTheme.split(" ").filter(Boolean);
         const wordsObject = { wordsArray: customWords };
         const generatedWords = await generateWords(wordsObject);
-        console.log(generatedWords);
 
         navigation.navigate("Game", {
           numberOfTeams: numberOfTeams,
@@ -86,26 +85,27 @@ export default function GameSettings({ navigation }) {
         </View>
       ) : (
         <>
-          <TouchableOpacity
-            style={styles.backButton}
-            onPress={() => navigation.navigate("Home")}
-          >
-            <Text style={styles.backText}>← Retour</Text>
-          </TouchableOpacity>
-          <Text style={styles.title}>Paramètres du Jeu</Text>
+          <BackButton />
+          <View style={styles.center}>
+            <Text style={stylesGlobal.title}>Paramètres du Jeu</Text>
+          </View>
           <Text style={styles.labelCategories}>Nombre d'équipes :</Text>
-          <TextInput
-            style={styles.input}
-            keyboardType="numeric"
+
+          <Input
+            placeholder="Saisissez le nombre d'équipes"
             value={numberOfTeams}
             onChangeText={handleNumberInputChange}
-            placeholder="Entrez le nombre d'équipes"
+            numeric
           />
+
           <Text style={styles.labelCategories}>Thème de la partie :</Text>
 
           <View style={styles.themeSwitchContainer}>
             <Text style={styles.switchLabel}>Par défaut</Text>
             <Switch
+              trackColor={{ false: "#212121", true: "#FF9000" }}
+              thumbColor="#C6C6C6"
+              ios_backgroundColor="#212121"
               value={isDefaultTheme}
               onValueChange={(value) => {
                 setIsDefaultTheme(value);
@@ -113,18 +113,16 @@ export default function GameSettings({ navigation }) {
                   setGameTheme("");
                 }
               }}
-              style={styles.switch}
             />
           </View>
           {!isDefaultTheme && (
-            <TextInput
-              style={styles.input}
+            <Input
+              placeholder="Saisissez le thème (max 5 mots)"
               value={gameTheme}
               onChangeText={handleThemeInputChange}
-              placeholder="Entrez le thème (max 5 mots)"
             />
           )}
-          <Button title="Confirmer" onPress={handleSubmit} />
+          <Button text="Confirmer" type="primary" onPress={handleSubmit} />
         </>
       )}
     </View>
@@ -132,49 +130,36 @@ export default function GameSettings({ navigation }) {
 }
 
 const styles = StyleSheet.create({
+  center: {
+    alignItems: "center",
+    justifyContent: "center",
+  },
   container: {
     flex: 1,
-    backgroundColor: "#fff",
+    backgroundColor: "#000",
     padding: 20,
     justifyContent: "center",
   },
-  title: {
-    fontSize: 28,
-    fontWeight: "bold",
-    textAlign: "center",
-    color: "#4CAF50",
-    marginBottom: 20,
-  },
+
   labelCategories: {
     fontSize: 20,
     marginBottom: 10,
-    color: "#333",
+    color: "#FF9000",
     marginTop: 7,
     fontWeight: "bold",
   },
-  input: {
-    height: 40,
-    borderColor: "#ccc",
-    borderWidth: 1,
-    marginBottom: 20,
-    paddingLeft: 10,
-    fontSize: 18,
-    borderRadius: 5,
-    backgroundColor: "#f9f9f9",
-  },
+
   themeSwitchContainer: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
     marginBottom: 20,
   },
-  switch: {},
+
   switchLabel: {
     fontSize: 18,
-    color: "#333",
+    color: "#c6c6c6",
   },
-  backButton: { position: "absolute", top: 50, left: 20 },
-  backText: { fontSize: 18, color: "#007BFF" },
   loaderContainer: {
     flex: 1,
     justifyContent: "center",

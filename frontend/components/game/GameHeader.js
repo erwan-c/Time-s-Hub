@@ -1,38 +1,21 @@
 import React from "react";
 import { View, Text, StyleSheet } from "react-native";
-
-const GameHeader = ({ teamName, timer }) => (
+import { stylesGlobal } from "../../styles";
+const GameHeader = ({ teamName, timer, round }) => (
   <View style={styles.container}>
-    <Text style={styles.title}>Jeu en Cours</Text>
-    <Text style={styles.subTitle}>Équipe actuelle : {teamName}</Text>
-    <Text style={styles.timer}>Temps restant : {timer} s</Text>
+    <Text style={stylesGlobal.title}>Manche {round}</Text>
+    <Text style={stylesGlobal.subTitle}>Équipe actuelle : {teamName}</Text>
+    <Text style={stylesGlobal.title}>Temps restant : {timer} s</Text>
   </View>
 );
 
 const styles = StyleSheet.create({
   container: {
     marginBottom: 20,
+    justifyContent:"center",
+    alignItems:"center"
   },
-  title: {
-    fontSize: 28,
-    fontWeight: "bold",
-    textAlign: "center",
-    color: "#4CAF50",
-    marginBottom: 10,
-  },
-  subTitle: {
-    fontSize: 20,
-    color: "#333",
-    fontWeight: "bold",
-    textAlign: "center",
-    marginBottom: 10,
-  },
-  timer: {
-    fontSize: 24,
-    color: "#ff5733",
-    fontWeight: "bold",
-    textAlign: "center",
-  },
+ 
 });
 
 export default GameHeader;
