@@ -10,7 +10,7 @@ Time's Hub est une application mobile inspirée du jeu Time's Up. Elle permet à
 * **Frontend** : React Native (Expo)
 * **Backend** : Node.js + Express
 * **Base de données** : MongoDB Atlas
-* **IA** : OpenAI ou Gemini (pour la génération dynamique de mots)
+* **IA** : Gemini (pour la génération dynamique de mots)
 
 ---
 
@@ -43,7 +43,7 @@ README.md               # Ce fichier
 ### Prérequis
 
 * Node.js >= 18
-* Expo CLI : `npm install -g expo-cli`
+* Expo CLI : `npm install`
 * Compte MongoDB Atlas
 * Clé API OpenAI ou Gemini
 
@@ -53,16 +53,17 @@ README.md               # Ce fichier
 git clone https://github.com/votre-utilisateur/times-hub.git
 cd times-hub
 ```
+> Ou directement le dossier ZIP fourni
 
 ### 2. Initialisation du frontend
 
 ```bash
 cd frontend
 npm install
-npx expo start
+npm start
 ```
 
-> Pour Android : scannez le QR code avec l’app Expo Go
+> Pour Android comme IOS : scannez le QR code avec l’app Expo Go
 
 ### 3. Initialisation du backend
 
@@ -71,13 +72,7 @@ cd backend
 npm install
 ```
 
-Créer un fichier `.env` dans `/backend` avec :
-
-```env
-MONGO_URI=your_mongodb_url
-JWT_SECRET=your_jwt_secret
-OPENAI_API_KEY=your_api_key
-```
+> Le .env sont fournis dans le zip  
 
 Puis lancer le backend :
 
@@ -87,61 +82,12 @@ npm start
 
 ---
 
-## ⚙️ Variables d’environnement (frontend)
-
-Dans `frontend/.env` :
-
-```env
-BASE_URL=http://localhost:5000/api
-```
-
-> En production, remplacez par l’URL de votre backend déployé.
-
----
-
 ## 🧪 Tester l’application
 
-* Lancer `npx expo start`
+* Lancer `npm  start` dans `frontend`
 * Lancer `npm start` dans `backend`
 * Depuis l’app mobile Expo Go, scannez le QR code
 * Tester : inscription, connexion, jeu avec ou sans thème personnalisé
-
----
-
-## 📤 Déploiement
-
-### Mobile (Expo)
-
-```bash
-npx expo export --platform android/ios
-```
-
-### Backend (Vercel, Render ou Heroku)
-
-* Déployer l’API
-* Mettre à jour `BASE_URL` dans le frontend
-
----
-
-## 🧰 Dépendances clés
-
-### Frontend
-
-```json
-"react-native": "~0.74.x",
-"expo": "^53.x.x",
-"axios": "^1.x",
-"@react-navigation/native": "^7.x"
-```
-
-### Backend
-
-```json
-"express": "^4.x",
-"mongoose": "^7.x",
-"jsonwebtoken": "^9.x",
-"axios": "^1.x"
-```
 
 ---
 
@@ -151,8 +97,3 @@ npx expo export --platform android/ios
 * Erwan Chaintron
 * Mattéo Broquet
 
----
-
-## 📄 Licence
-
-Ce projet est distribué sous licence MIT.
