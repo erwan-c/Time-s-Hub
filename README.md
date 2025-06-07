@@ -147,8 +147,9 @@ npx expo export --platform android/ios
 
 ## 👥 Auteurs
 
-* Nolann \[Product & Dev]
-* Collaborateurs à venir...
+* Nolann Devignes
+* Erwan Chaintron
+* Mattéo Broquet
 
 ---
 
