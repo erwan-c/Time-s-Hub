@@ -51,7 +51,7 @@ README.md               # Ce fichier
 
 ```bash
 git clone https://github.com/erwan-c/Time-s-Hub
-cd times-hub
+cd Time-s-Hub
 ```
 > Ou directement le dossier ZIP fourni
 
