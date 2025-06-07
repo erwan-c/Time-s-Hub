@@ -9,15 +9,22 @@ export const stylesGlobal = StyleSheet.create({
     color: "#c6c6c6",
     marginBottom: 20,
   },
+  time: {
+    alignSelf:"center",
+    fontSize: 70,
+    fontWeight: "bold",
+    color: "#c6c6c6",
+    marginBottom: 20,
+  },
   buttonPrimary: {
-    backgroundColor: '#FF9000',
+    backgroundColor: '#1ABC9C',
     padding: 12,
     borderRadius: 4,
     alignItems: 'center',
   },
   
   buttonSecondary: {
-    backgroundColor: '#FF9000',
+    backgroundColor: '#1ABC9C',
     padding: 20,
     borderRadius: 12,
     alignItems: 'center',
@@ -36,7 +43,7 @@ export const stylesGlobal = StyleSheet.create({
     width: '100%',
     padding: 10,
     borderWidth: 1,
-    borderColor: '#FF9000',
+    borderColor: '#1ABC9C',
     borderRadius: 6,
     fontSize: 16,
     color: '#c6c6c6',
@@ -58,11 +65,12 @@ export const stylesGlobal = StyleSheet.create({
   },
   backText: {
     fontSize: 18,
-    color: "#FF9000",
+    color: "#1ABC9C",
+    paddingTop: 20
   },
   errorTitle: {
     fontSize: 24,
-    color: "#FF9000",
+    color: "#1ABC9C",
     textAlign: "center",
   },
   errorText: {
@@ -75,7 +83,7 @@ export const stylesGlobal = StyleSheet.create({
   label: {
     fontSize: 18,
     fontWeight: "600",
-    color: "#FF9000",
+    color: "#1ABC9C",
   },
   info: {
     fontSize: 16,
@@ -84,7 +92,7 @@ export const stylesGlobal = StyleSheet.create({
   },
   subTitle: {
     fontSize: 20,
-    color: "#FF9000",
+    color: "#1ABC9C",
     fontWeight: "bold",
     textAlign: "center",
     marginBottom: 10,
@@ -103,4 +111,5 @@ export const stylesGlobal = StyleSheet.create({
     marginBottom: 5,
     alignSelf: "flex-start",
   },
+
 });

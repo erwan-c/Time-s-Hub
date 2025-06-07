@@ -4,8 +4,8 @@ import { stylesGlobal } from "../../styles";
 const GameHeader = ({ teamName, timer, round }) => (
   <View style={styles.container}>
     <Text style={stylesGlobal.title}>Manche {round}</Text>
-    <Text style={stylesGlobal.subTitle}>Équipe actuelle : {teamName}</Text>
-    <Text style={stylesGlobal.title}>Temps restant : {timer} s</Text>
+    <Text style={stylesGlobal.subTitle}>{teamName}</Text>
+    <Text style={stylesGlobal.time}>{timer}'</Text>
   </View>
 );
 

@@ -4,84 +4,137 @@ import {
   Text,
   View,
   TouchableOpacity,
-  Animated,
-  ImageBackground,
   Image,
+  StatusBar,
+  ImageBackground,
+  Modal,
+  Platform,
 } from "react-native";
 import Icon from "react-native-vector-icons/AntDesign";
 import { stylesGlobal } from "../styles";
 import Button from "../components/button";
-import Video from "react-native-video"; // Import de la vidéo
+import GameSettings from "./GameSettings";
 
 export default function Home({ navigation }) {
+  const [showSettings, setShowSettings] = useState(false);
+
   return (
-    <View style={styles.container}>
-       
+    <ImageBackground
+      source={require("../assets/background3.png")}
+      style={styles.background}
+      resizeMode="cover"
+    >
+      <StatusBar barStyle="light-content" />
+
       <TouchableOpacity
         style={styles.profileIcon}
         onPress={() => navigation.navigate("Profil")}
       >
-        <Icon
-          name="user"
-          size={35}
-          color="#FF9000"
-          style={styles.profileImage}
-        />
+        <Icon name="user" size={28} color="#F39C12" />
       </TouchableOpacity>
-      <Image source={require("../assets/logoTimes.png")} style={styles.logo} />
 
-      <Text style={stylesGlobal.title}>Bienvenue!</Text>
+      <View style={styles.centerContent}>
+        {/* Tu peux rajouter ici ton logo si tu veux */}
+      </View>
 
       <View style={styles.buttonContainer}>
         <Button
-          text="JOUER"
-          type="play"
-          onPress={() => navigation.navigate("GameSettings")}
-        />
-
-        <Button
-          text="Comment jouer ?"
+          text="🎮 JOUER"
           type="primary"
-          onPress={() => navigation.navigate("Rules")}
+          onPress={() => setShowSettings(true)}
+          style={styles.bigButton}
+          textStyle={styles.bigButtonText}
+
         />
       </View>
-    </View>
+
+      {/* Petit bouton "!" pour règles */}
+      <TouchableOpacity
+        style={styles.helpButton}
+        onPress={() => navigation.navigate("Rules")}
+      >
+        <Text style={styles.helpText}>!</Text>
+      </TouchableOpacity>
+
+      <Text style={styles.footer}>✨ v1.0 — Time’s Hub</Text>
+
+      {/* POPUP MODALE */}
+      <Modal
+        visible={showSettings}
+        animationType="slide"
+        transparent
+        onRequestClose={() => setShowSettings(false)}
+      >
+        <GameSettings
+          onClose={() => setShowSettings(false)}
+          navigation={navigation}
+        />
+      </Modal>
+    </ImageBackground>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
+  background: {
+    flex: 1,
+  },
+  profileIcon: {
+    position: "absolute",
+    top: 50,
+    right: 20,
+    padding: 10,
+    backgroundColor: "#1E1E1EAA",
+    borderRadius: 25,
+    zIndex: 10,
+  },
+  centerContent: {
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    padding: 20,
-    backgroundColor: "#000",
+    marginTop: Platform.OS === "ios" ? 80 : 40,
   },
- 
-  profileIcon: {
+  buttonContainer: {
+    paddingHorizontal: 20,
+    paddingBottom: 150,
+    width: "100%",
+    gap: 20,
+  },
+  footer: {
     position: "absolute",
-    top: 60,
-    right: 20,
-    zIndex: 10,
+    bottom: 10,
+    alignSelf: "center",
+    color: "#cccccc",
+    fontSize: 12,
   },
-
-  profileImage: {
+  helpButton: {
+    position: "absolute",
+    bottom: 30,
+    right: 20,
     width: 40,
     height: 40,
     borderRadius: 20,
-  },
-  buttonContainer: {
-    alignItems: "center",
+    backgroundColor: "#F39C12",
     justifyContent: "center",
-    gap: 30, 
+    alignItems: "center",
+    elevation: 5,
+    shadowColor: "#000",
+    shadowOffset: { width: 1, height: 1 },
+    shadowOpacity: 0.3,
+    shadowRadius: 3,
   },
-  logo: {
-    position: "absolute",
-    top: 60,
-    left: 1,
-    width: 200, 
-    height: 40, 
-    resizeMode: "contain",
+  helpText: {
+    color: "#fff",
+    fontSize: 22,
+    fontWeight: "bold",
   },
-});
+  bigButton: {
+  paddingVertical: 24,
+  paddingHorizontal: 40,
+  borderRadius: 12,
+},
 
+bigButtonText: {
+  fontSize: 28,
+  fontWeight: "bold",
+},
+});

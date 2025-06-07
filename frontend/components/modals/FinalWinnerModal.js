@@ -1,53 +1,98 @@
-import React from "react";
-import { Modal, View, Text,  StyleSheet } from "react-native";
+import React, { useEffect, useRef } from "react";
+import {
+  Modal,
+  View,
+  Text,
+  StyleSheet,
+  Animated,
+  Image,
+  Dimensions,
+} from "react-native";
 import Button from "../button";
 import { stylesGlobal } from "../../styles";
+import LottieView from "lottie-react-native";
+
+const { width, height } = Dimensions.get("window");
 
 const FinalWinnerModal = ({ visible, onClose, teams }) => {
   const maxScore = Math.max(...teams.map((team) => team.score));
   const winningTeams = teams.filter((team) => team.score === maxScore);
   const winnerNames = winningTeams.map((team) => team.name).join(", ");
 
+  const fadeAnim = useRef(new Animated.Value(0)).current;
+
+  useEffect(() => {
+    if (visible) {
+      Animated.timing(fadeAnim, {
+        toValue: 1,
+        duration: 800,
+        useNativeDriver: true,
+      }).start();
+    } else {
+      fadeAnim.setValue(0);
+    }
+  }, [visible]);
+
   return (
-    <Modal visible={visible} animationType="slide" transparent={true}>
-      <View style={styles.modalContainer}>
-        <View style={styles.modalContent}>
-          <Text style={stylesGlobal.subTitle}>Fin du Jeu</Text>
-          <Text style={stylesGlobal.info}>
-            Félicitations à {winnerNames} avec {maxScore} point(s) !
+    <Modal visible={visible} animationType="fade" transparent={true}>
+      <View style={styles.modalBackground}>
+        <Animated.View style={[styles.modalContainer, { opacity: fadeAnim }]}> 
+          <LottieView
+            source={require("../../assets/fireworks.json")}
+            autoPlay
+            loop
+            style={styles.fireworks}
+          />
+
+          <Text style={stylesGlobal.subTitle}>✨ Victoire ! ✨</Text>
+          <Text style={styles.winnerText}>
+            Bravo à {winnerNames} avec {maxScore} point(s) !
           </Text>
+
           <View style={styles.buttonContainer}>
-          <Button
-              text="Retour à l'accueil"
-              type="primary"
-              onPress={onClose}
-            />
-            </View>
-        </View>
+            <Button text="Retour à l'accueil" type="primary" onPress={onClose} />
+          </View>
+        </Animated.View>
       </View>
     </Modal>
   );
 };
 
 const styles = StyleSheet.create({
-  modalContainer: {
+  modalBackground: {
     flex: 1,
+    backgroundColor: "rgba(0, 0, 0, 0.85)",
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: "#000",
   },
-  modalContent: {
-    width: "80%",
-    backgroundColor: "#212121",
-    borderRadius: 10,
-    padding: 20,
+  modalContainer: {
+    width: "90%",
+    backgroundColor: "#1e1e1e",
+    borderRadius: 16,
+    padding: 30,
     alignItems: "center",
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 5 },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    elevation: 10,
+  },
+  winnerText: {
+    fontSize: 20,
+    color: "#FF9000",
+    textAlign: "center",
+    marginTop: 15,
+    fontWeight: "600",
   },
   buttonContainer: {
-    flexDirection: "row",
-    justifyContent: "space-around",
+    marginTop: 25,
     width: "100%",
-    marginTop: 20,
+  },
+  fireworks: {
+    position: "absolute",
+    top: -60,
+    width: width,
+    height: height * 0.6,
   },
 });
 

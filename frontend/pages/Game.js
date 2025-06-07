@@ -9,6 +9,8 @@ import TeamReadyModal from "../components/modals/TeamReadyModal";
 import FinalWinnerModal from "../components/modals/FinalWinnerModal";
 import useAuth from "../hook/useAuth";
 import { addGameHistory } from "../api/gameHistory";
+import { ImageBackground } from "react-native";
+import BackButton from "../components/backButton";
 
 export default function Game() {
   const route = useRoute();
@@ -135,19 +137,33 @@ export default function Game() {
     return () => clearInterval(interval);
   }, []);
 
-  return (
-    <View style={styles.container}>
-      <GameHeader
-        teamName={teamsArray[currentTeamIndex].name}
-        timer={timer}
-        round={currentRound}
-      />
+  
 
-      {remainingWords.length > 0 ? (
-        <WordCard word={remainingWords[currentWordIndex]} />
-      ) : null}
+return (
+  <ImageBackground
+    source={require("../assets/background.png")} // ← ou ton nouveau fond
+    style={styles.background}
+    resizeMode="cover"
+  >
+    <BackButton />
+    <View style={styles.overlay}>
+      <View style={styles.headerContainer}>
+        <GameHeader
+          teamName={teamsArray[currentTeamIndex].name}
+          timer={timer}
+          round={currentRound}
+        />
+      </View>
 
-      <WordButtons onSkipWord={skipWord} onValidateWord={validateWord} />
+      {remainingWords.length > 0 && (
+        <View style={styles.wordContainer}>
+          <WordCard word={remainingWords[currentWordIndex]} reste={remainingWords.length}/>
+        </View>
+      )}
+
+      <View style={styles.buttonContainer}>
+        <WordButtons onSkipWord={skipWord} onValidateWord={validateWord} />
+      </View>
 
       <TeamReadyModal
         visible={isModalVisible}
@@ -173,16 +189,34 @@ export default function Game() {
         teams={teamsArray}
       />
     </View>
-  );
+  </ImageBackground>
+);
+
 }
 
 const styles = StyleSheet.create({
-  container: {
-    justifyContent :"center",
-    alignItems:"center",
+  background: {
     flex: 1,
-    backgroundColor: "#000",
-    padding: 20,
-    paddingTop: 200,
+  },
+  overlay: {
+    flex: 1,
+    backgroundColor: "rgba(0,0,0,0.7)", // effet fondu
+    paddingHorizontal: 20,
+    paddingTop: 40,
+    justifyContent: "space-between",
+  },
+  headerContainer: {
+    alignItems: "center",
+    marginBottom: 10,
+  },
+  wordContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    paddingHorizontal: 10,
+  },
+  buttonContainer: {
+    paddingBottom: 50,
+    gap: 20,
   },
 });

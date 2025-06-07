@@ -2,10 +2,10 @@ import React, { useEffect, useState } from "react";
 import {
   View,
   Text,
-  TouchableOpacity,
   StyleSheet,
   Alert,
   FlatList,
+  ImageBackground,
 } from "react-native";
 import useAuth from "../hook/useAuth";
 import { getUserGameHistory } from "../api/gameHistory";
@@ -31,27 +31,35 @@ export default function Profil({ navigation }) {
 
   if (!user) {
     return (
-      <View style={styles.container}>
-        <BackButton />
-        <View style={styles.center}>
-          <Text style={stylesGlobal.errorTitle}>Attention</Text>
-          <Text style={stylesGlobal.errorText}>
-            Vous devez être connecté pour voir cette page.
-          </Text>
+      <ImageBackground
+        source={require("../assets/background3.png")}
+        style={styles.background}
+        resizeMode="cover"
+      >
+        <View style={styles.overlay}>
+          <View style={styles.container}>
+            <BackButton />
+            <View style={styles.center}>
+              <Text style={stylesGlobal.errorTitle}>Attention</Text>
+              <Text style={stylesGlobal.errorText}>
+                Vous devez être connecté pour voir cette page.
+              </Text>
+            </View>
+            <View style={styles.buttonContainer}>
+              <Button
+                text="Se connecter"
+                type="primary"
+                onPress={() => navigation.navigate("Login")}
+              />
+              <Button
+                text="Rester hors ligne"
+                type="primary"
+                onPress={() => navigation.navigate("Home")}
+              />
+            </View>
+          </View>
         </View>
-        <View style={styles.buttonContainer}>
-          <Button
-            text="Se connecter"
-            type="primary"
-            onPress={() => navigation.navigate("Login")}
-          />
-          <Button
-            text="Rester hors ligne"
-            type="primary"
-            onPress={() => navigation.navigate("Home")}
-          />
-        </View>
-      </View>
+      </ImageBackground>
     );
   }
 
@@ -73,73 +81,74 @@ export default function Profil({ navigation }) {
         <Text style={styles.bold}>Nombre d'équipes :</Text> {item.numberOfTeams}
       </Text>
       <Text style={styles.historyText}>
-        <Text style={styles.bold}>Date :</Text>{" "}  
-        {new Date(item.createdAt).toLocaleDateString()}
+        <Text style={styles.bold}>Date :</Text> {new Date(item.createdAt).toLocaleDateString()}
       </Text>
     </View>
   );
 
   return (
-    <View style={styles.containerConnected}>
-      <BackButton />
-      <View style={styles.categorie}>
-        <View style={styles.center}>
-          <Text style={stylesGlobal.title}>Profil</Text>
-        </View>
-        <View style={styles.infoContainer}>
-          <Text style={stylesGlobal.label}>Nom :</Text>
-          <Text style={stylesGlobal.info}>{user.name}</Text>
-        </View>
-        <View style={styles.infoContainer}>
-          <Text style={stylesGlobal.label}>Email :</Text>
-          <Text style={stylesGlobal.info}>{user.email}</Text>
-        </View>
+    <ImageBackground
+      source={require("../assets/background3.png")}
+      style={styles.background}
+      resizeMode="cover"
+    >
+      <View style={styles.overlay}>
+        <FlatList
+          data={gameHistory}
+          keyExtractor={(item) => item._id}
+          renderItem={renderGameHistory}
+          contentContainerStyle={styles.containerConnected}
+          ListHeaderComponent={
+            <>
+              <BackButton />
+              <View style={styles.categorie}>
+                <View style={styles.center}>
+                  <Text style={stylesGlobal.title}>Profil</Text>
+                </View>
+                <View style={styles.infoContainer}>
+                  <Text style={stylesGlobal.label}>Nom :</Text>
+                  <Text style={stylesGlobal.info}>{user.name}</Text>
+                </View>
+                <View style={styles.infoContainer}>
+                  <Text style={stylesGlobal.label}>Email :</Text>
+                  <Text style={stylesGlobal.info}>{user.email}</Text>
+                </View>
+              </View>
+              <Button text="Se déconnecter" type="primary" onPress={handleLogout} />
+              <View style={styles.center}>
+                <Text style={stylesGlobal.title}>Historique</Text>
+              </View>
+              {gameHistory.length === 0 && (
+                <View style={styles.center}>
+                  <Text style={stylesGlobal.errorTitle}>Attention</Text>
+                  <Text style={stylesGlobal.errorText}>
+                    Aucun historique de jeu trouvé.
+                  </Text>
+                </View>
+              )}
+            </>
+          }
+        />
       </View>
-      <Button text="Se déconnecter" type="primary" onPress={handleLogout} />
-
-      <View style={styles.categorie}>
-        <View style={styles.center}>
-          <Text style={stylesGlobal.title}>Historique </Text>
-        </View>
-        {gameHistory.length > 0 ? (
-          <View style={styles.historyContainer}>
-          <FlatList
-            data={gameHistory}
-            renderItem={renderGameHistory}
-            keyExtractor={(item) => item._id}
-            style={styles.historyList}
-          />
-        </View>
-        
-        ) : (
-          <View style={styles.center}>
-            <Text style={stylesGlobal.errorTitle}>Attention</Text>
-            <Text style={stylesGlobal.errorText}>
-              Aucun historique de jeu trouvé.
-            </Text>
-          </View>
-        )}
-      </View>
-    </View>
+    </ImageBackground>
   );
 }
 
 const styles = StyleSheet.create({
+  background: {
+    flex: 1,
+  },
+  overlay: {
+    flex: 1,
+    backgroundColor: "rgba(0, 0, 0, 0.85)",
+  },
   container: {
     flex: 1,
     padding: 30,
-    backgroundColor: "#000",
     justifyContent: "center",
   },
   containerConnected: {
-    flex: 1,
     padding: 20,
-    backgroundColor: "#000",
-  },
-
-  titleContainer: {
-    marginTop: 50,
-    marginBottom: 20,
   },
   categorie: {
     marginTop: 50,
@@ -151,15 +160,12 @@ const styles = StyleSheet.create({
   },
   buttonContainer: {
     gap: 20,
+    padding: 20,
   },
   infoContainer: {
     marginVertical: 10,
     width: "100%",
     paddingHorizontal: 20,
-  },
-  historyList: {
-    marginTop: 30,
-    width: "100%",
   },
   historyItem: {
     padding: 10,
@@ -173,11 +179,6 @@ const styles = StyleSheet.create({
   },
   bold: {
     fontWeight: "bold",
-    color: "#FF9000",
+    color: "#F39C12",
   },
-  historyContainer: {
-    maxHeight: 400, 
-    width: "100%",
-  },
-  
 });
