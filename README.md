@@ -50,7 +50,7 @@ README.md               # Ce fichier
 ### 1. Cloner le projet
 
 ```bash
-git clone https://github.com/votre-utilisateur/times-hub.git
+git clone https://github.com/erwan-c/Time-s-Hub
 cd times-hub
 ```
 > Ou directement le dossier ZIP fourni
